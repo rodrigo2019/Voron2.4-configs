@@ -53,7 +53,7 @@ def read_gcode(filename):
 
 def process_history():
     # iterate over folder for all *.gcode files
-    files = os.listdir("~/printer_data/gcodes")
+    files = os.listdir("/home/rodrigo/printer_data/gcodes")
     files = [file for file in files if file.endswith(".gcode")]
     total_x = 0
     total_y = 0
