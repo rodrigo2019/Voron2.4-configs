@@ -4,6 +4,7 @@ import requests
 
 if __name__ == "__main__":
 
+    print("OI")
     arg = sys.argv[1].lower()
     if arg == "init_km":
         initial_km = float(sys.argv[2])
