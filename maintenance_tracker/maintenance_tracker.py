@@ -52,15 +52,15 @@ def read_gcode(filename):
 def process_gcode(filename):
     x, y, z = read_gcode(filename)
 
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_x"
+    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_x"
     ret = requests.get(url)
     curr_value_x = float(ret.json()["result"]["value"])
 
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_y"
+    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_y"
     ret = requests.get(url)
     curr_value_y = float(ret.json()["result"]["value"])
 
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_z"
+    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_z"
     ret = requests.get(url)
     curr_value_z = float(ret.json()["result"]["value"])
 
@@ -68,11 +68,11 @@ def process_gcode(filename):
     y += curr_value_y
     z += curr_value_z
 
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_x&value={x}"
+    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_x&value={x}"
     requests.post(url)
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_y&value={y}"
+    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_y&value={y}"
     requests.post(url)
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_z&value={z}"
+    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_z&value={z}"
     requests.post(url)
 
     query_db()
@@ -92,15 +92,15 @@ def process_history():
         total_y += y
         total_z += z
 
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_x"
+    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_x"
     ret = requests.get(url)
     curr_value_x = float(ret.json()["result"]["value"])
 
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_y"
+    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_y"
     ret = requests.get(url)
     curr_value_y = float(ret.json()["result"]["value"])
 
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_z"
+    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_z"
     ret = requests.get(url)
     curr_value_z = float(ret.json()["result"]["value"])
 
@@ -118,35 +118,35 @@ def process_history():
     query_db()
 
 
-def reset_db(inital_km):
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=init_value&value={initial_km * 1000 * 1000}"
+def reset_db(initial_km):
+    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=init_value&value={initial_km * 1000 * 1000}"
     requests.post(url)
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_x&value={0}"
+    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_x&value={0}"
     requests.post(url)
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_y&value={0}"
+    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_y&value={0}"
     requests.post(url)
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_z&value={0}"
+    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_z&value={0}"
     requests.post(url)
     print(f"Database reset to: {initial_km} km")
 
 
 def query_db():
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=init_value"
+    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=init_value"
     ret = requests.get(url)
     init_value = float(ret.json()["result"]["value"])
     init_value = init_value / 1000 / 1000
 
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_x"
+    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_x"
     ret = requests.get(url)
     curr_value_x = float(ret.json()["result"]["value"])
     curr_value_x = curr_value_x / 1000 / 1000
 
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_y"
+    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_y"
     ret = requests.get(url)
     curr_value_y = float(ret.json()["result"]["value"])
     curr_value_y = curr_value_y / 1000 / 1000
 
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_z"
+    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_z"
     ret = requests.get(url)
     curr_value_z = float(ret.json()["result"]["value"])
     curr_value_z = curr_value_z / 1000 / 1000
@@ -163,8 +163,8 @@ if __name__ == "__main__":
 
     arg = sys.argv[1].lower()
     if arg == "init_km":
-        initial_km = float(sys.argv[2])
-        reset_db(initial_km)
+        initial_km_ = float(sys.argv[2])
+        reset_db(initial_km_)
     elif arg == "query":
         query_db()
     elif arg == "process_history":
