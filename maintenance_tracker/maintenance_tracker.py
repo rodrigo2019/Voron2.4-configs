@@ -22,10 +22,8 @@ def read_gcode(filename):
     for line in lines:
         if line.startswith("G90"):
             mode = "absolute"
-            print("mode: ", mode)
         elif line.startswith("G91"):
             mode = "relative"
-            print("mode: ", mode)
         elif line.startswith("G1") or line.startswith("G0"):
             if "X" in line:
                 if mode == "absolute":
