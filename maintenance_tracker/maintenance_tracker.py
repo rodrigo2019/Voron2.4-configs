@@ -3,7 +3,7 @@ import os
 
 import requests
 
-MOONRAKER_URL = "http://127.0.0.1:7125"
+MOONRAKER_URL = "http://192.168.100.96:7125"
 
 
 def _read_gcode(filename):
@@ -18,7 +18,10 @@ def _read_gcode(filename):
     last_positions = {"x": 0, "y": 0, "z": 0}
 
     for line in lines:
-        command, *values = line.split()
+        command, *values = line.split(" ")
+        moves = {}
+        for value in values:
+            moves[value[0]] = float(value[1:])
 
         if command == "G90":
             mode = "absolute"
@@ -26,12 +29,12 @@ def _read_gcode(filename):
             mode = "relative"
         elif command in ["G1", "G0"]:
             for axis in ["X", "Y", "Z"]:
-                if axis in values:
-                    current_value = float(values[values.index(axis) + 1])
+                if axis in moves:
+                    current_value = moves[axis]
                     distances[axis.lower()] += abs(
-                        current_value - last_positions[axis.lower()]) if mode == "absolute" else current_value
+                        current_value - last_positions[axis.lower()]) \
+                        if mode == "absolute" else current_value
                     last_positions[axis.lower()] = current_value
-
     return distances["x"], distances["y"], distances["z"]
 
 
@@ -129,4 +132,5 @@ if __name__ == "__main__":
             process_history(gcode_folder_)
         else:
             filename_ = f"{gcode_folder_}/{sys.argv[2]}"
+            # filename_ = sys.argv[2]
             process_gcode(filename_)
