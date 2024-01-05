@@ -49,6 +49,35 @@ def read_gcode(filename):
     return x, y, z
 
 
+def process_gcode(filename):
+    x, y, z = read_gcode(filename)
+
+    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_x"
+    ret = requests.get(url)
+    curr_value_x = float(ret.json()["result"]["value"])
+
+    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_y"
+    ret = requests.get(url)
+    curr_value_y = float(ret.json()["result"]["value"])
+
+    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_z"
+    ret = requests.get(url)
+    curr_value_z = float(ret.json()["result"]["value"])
+
+    x += curr_value_x
+    y += curr_value_y
+    z += curr_value_z
+
+    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_x&value={x}"
+    requests.post(url)
+    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_y&value={y}"
+    requests.post(url)
+    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_z&value={z}"
+    requests.post(url)
+
+    query_db()
+
+
 def process_history():
     # iterate over folder for all *.gcode files
     files = os.listdir("/home/rodrigo/printer_data/gcodes")
@@ -140,3 +169,6 @@ if __name__ == "__main__":
         query_db()
     elif arg == "process_history":
         process_history()
+    elif arg == "process_gcode":
+        filename = f"/home/rodrigo/printer_data/gcodes/{sys.argv[2]}"
+        process_gcode(filename)
