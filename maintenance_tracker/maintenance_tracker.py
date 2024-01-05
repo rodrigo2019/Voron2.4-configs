@@ -3,7 +3,7 @@ import os
 
 import requests
 
-MOONRAKER_URL = "http://127.0.0.1::7125"
+MOONRAKER_URL = "http://127.0.0.1:7125"
 
 
 def _read_gcode(filename):
