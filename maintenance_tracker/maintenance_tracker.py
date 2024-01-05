@@ -3,8 +3,10 @@ import os
 
 import requests
 
+MOONRAKER_URL = "http://127.0.0.1::7125"
 
-def read_gcode(filename):
+
+def _read_gcode(filename):
     with open(filename) as f:
         lines = f.readlines()
 
@@ -49,32 +51,29 @@ def read_gcode(filename):
     return x, y, z
 
 
+def _update_odometer(x=None, y=None, z=None):
+    url = f"{MOONRAKER_URL}/server/database/item?namespace=maintenance_tracker"
+
+    if x is not None:
+        ret = requests.get(url + "&key=curr_value_x")
+        curr_value_x = float(ret.json()["result"]["value"])
+        x += curr_value_x
+        requests.post(url + f"&key=curr_value_x&value={x}")
+    if y is not None:
+        ret = requests.get(url + "&key=curr_value_y")
+        curr_value_y = float(ret.json()["result"]["value"])
+        y += curr_value_y
+        requests.post(url + f"&key=curr_value_y&value={y}")
+    if z is not None:
+        ret = requests.get(url + "&key=curr_value_z")
+        curr_value_z = float(ret.json()["result"]["value"])
+        z += curr_value_z
+        requests.post(url + f"&key=curr_value_z&value={z}")
+
+
 def process_gcode(filename):
-    x, y, z = read_gcode(filename)
-
-    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_x"
-    ret = requests.get(url)
-    curr_value_x = float(ret.json()["result"]["value"])
-
-    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_y"
-    ret = requests.get(url)
-    curr_value_y = float(ret.json()["result"]["value"])
-
-    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_z"
-    ret = requests.get(url)
-    curr_value_z = float(ret.json()["result"]["value"])
-
-    x += curr_value_x
-    y += curr_value_y
-    z += curr_value_z
-
-    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_x&value={x}"
-    requests.post(url)
-    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_y&value={y}"
-    requests.post(url)
-    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_z&value={z}"
-    requests.post(url)
-
+    x, y, z = _read_gcode(filename)
+    _update_odometer(x, y, z)
     query_db()
 
 
@@ -87,46 +86,27 @@ def process_history():
     total_z = 0
     for file in files:
         file = f"/home/rodrigo/printer_data/gcodes/{file}"
-        x, y, z = read_gcode(file)
+        x, y, z = _read_gcode(file)
         total_x += x
         total_y += y
         total_z += z
 
-    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_x"
-    ret = requests.get(url)
-    curr_value_x = float(ret.json()["result"]["value"])
-
-    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_y"
-    ret = requests.get(url)
-    curr_value_y = float(ret.json()["result"]["value"])
-
-    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_z"
-    ret = requests.get(url)
-    curr_value_z = float(ret.json()["result"]["value"])
-
-    total_x += curr_value_x
-    total_y += curr_value_y
-    total_z += curr_value_z
-
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_x&value={total_x}"
-    requests.post(url)
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_y&value={total_y}"
-    requests.post(url)
-    url = f"http://192.168.100.96:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_z&value={total_z}"
-    requests.post(url)
-
+    _update_odometer(total_x, total_y, total_z)
     query_db()
 
 
 def reset_db(initial_km):
-    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=init_value&value={initial_km * 1000 * 1000}"
-    requests.post(url)
-    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_x&value={0}"
-    requests.post(url)
-    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_y&value={0}"
-    requests.post(url)
-    url = f"http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker&key=curr_value_z&value={0}"
-    requests.post(url)
+    base_url = "http://127.0.0.1:7125/server/database/item?namespace=maintenance_tracker"
+
+    # Reset init_value
+    init_value_url = f"{base_url}&key=init_value&value={initial_km * 1000 * 1000}"
+    requests.post(init_value_url)
+
+    # Reset curr_value_x, curr_value_y, curr_value_z
+    for axis in ['x', 'y', 'z']:
+        curr_value_url = f"{base_url}&key=curr_value_{axis}&value=0"
+        requests.post(curr_value_url)
+
     print(f"Database reset to: {initial_km} km")
 
 
@@ -170,5 +150,5 @@ if __name__ == "__main__":
     elif arg == "process_history":
         process_history()
     elif arg == "process_gcode":
-        filename = f"/home/rodrigo/printer_data/gcodes/{sys.argv[2]}"
-        process_gcode(filename)
+        filename_ = f"/home/rodrigo/printer_data/gcodes/{sys.argv[2]}"
+        process_gcode(filename_)
