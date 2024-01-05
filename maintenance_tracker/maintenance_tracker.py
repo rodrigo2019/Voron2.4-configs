@@ -11,7 +11,7 @@ def _read_gcode(filename):
         lines = f.readlines()
 
     valid_commands = {"G90", "G91", "G1", "G0"}
-    lines = [line for line in lines if line.split()[0] in valid_commands]
+    lines = [line for line in lines if line.split(" ")[0] in valid_commands]
 
     mode = "absolute"
     distances = {"x": 0, "y": 0, "z": 0}
