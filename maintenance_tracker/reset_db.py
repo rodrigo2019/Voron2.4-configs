@@ -36,9 +36,9 @@ def query_db():
     curr_value_z = float(ret.json()["result"]["value"])
     curr_value_z = (curr_value_z - init_value) / 1000 / 1000
 
-    print(f"Health of X axis: {curr_value_x / init_value:.2%}% (your X axis has traveled {curr_value_x:.2f} km)")
-    print(f"Health of Y axis: {curr_value_y / init_value:.2%}% (your Y axis has traveled {curr_value_y:.2f} km)")
-    print(f"Health of Z axis: {curr_value_z / init_value:.2%}% (your Z axis has traveled {curr_value_z:.2f} km)")
+    print(f"Health of X axis: {curr_value_x / init_value:.2%}% (your X axis has traveled {init_value - curr_value_x:.2f} km)")
+    print(f"Health of Y axis: {curr_value_y / init_value:.2%}% (your Y axis has traveled {init_value - curr_value_y:.2f} km)")
+    print(f"Health of Z axis: {curr_value_z / init_value:.2%}% (your Z axis has traveled {init_value - curr_value_z:.2f} km)")
 
 
 if __name__ == "__main__":
