@@ -59,6 +59,7 @@ def process_history():
     total_y = 0
     total_z = 0
     for file in files:
+        file = f"/home/rodrigo/printer_data/gcodes/{file}"
         x, y, z = read_gcode(file)
         total_x += x
         total_y += y
