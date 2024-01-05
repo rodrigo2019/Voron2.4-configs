@@ -3,7 +3,7 @@ import os
 
 import requests
 
-MOONRAKER_URL = "http://192.168.100.96:7125"
+MOONRAKER_URL = "http://127.0.0.1:7125"
 
 
 def _read_gcode(filename):
@@ -132,5 +132,4 @@ if __name__ == "__main__":
             process_history(gcode_folder_)
         else:
             filename_ = f"{gcode_folder_}/{sys.argv[2]}"
-            # filename_ = sys.argv[2]
             process_gcode(filename_)
