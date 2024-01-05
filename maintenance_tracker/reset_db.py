@@ -46,5 +46,6 @@ if __name__ == "__main__":
     arg = sys.argv[1].lower()
     if arg == "init_km":
         initial_km = float(sys.argv[2])
+        reset_db(initial_km)
     elif arg == "query":
         query_db()
